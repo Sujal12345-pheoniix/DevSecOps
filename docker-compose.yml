@@ -2,18 +2,19 @@ version: '3.8'
 
 services:
   db:
-    image: mysql:8.0
-    container_name: devtrack-mysql
+    image: postgres:15-alpine
+    container_name: devtrack-postgres
     restart: always
     environment:
-      MYSQL_DATABASE: devtrack
-      MYSQL_ROOT_PASSWORD: root
+      POSTGRES_DB: devtrack
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "devtrack"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,9 +27,9 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/devtrack?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/devtrack
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
       JWT_SECRET: 407f3f61556942b083321cb17036d0bc6cff4bf51a2d5ad5a7c36a6cf9df8268cfb8414fa9cf0ee86d11f6213702be9d9f5ad30424564c703b418fb5ff45db11
     depends_on:
       db:
@@ -46,4 +47,4 @@ services:
       - backend
 
 volumes:
-  mysql_data:
+  postgres_data:

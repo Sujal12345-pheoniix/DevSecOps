@@ -19,7 +19,7 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       
-      # Database connection variables (to be linked to Railway or external MySQL)
+      # Database connection variables (to be linked to Neon or external PostgreSQL)
       - key: SPRING_DATASOURCE_URL
         sync: false
       - key: SPRING_DATASOURCE_USERNAME

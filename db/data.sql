@@ -1,6 +1,4 @@
--- DevTrack Seed Data (MySQL & H2 compatible)
-
-USE devtrack;
+-- DevTrack Seed Data (PostgreSQL Compatible)
 
 -- 1. Insert Seed Users
 -- Password is 'password123' (BCrypt hashed)
