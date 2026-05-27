@@ -1,0 +1,53 @@
+# ==============================================================================
+# Render Blueprint Configuration (render.yaml)
+# ==============================================================================
+# Use this file to deploy the entire DevTrack stack onto Render.
+# To deploy, go to Dashboard -> Blueprints -> New Blueprint Instance in Render.
+# ==============================================================================
+
+services:
+  # 1. DevTrack Spring Boot Backend Service
+  - type: web
+    name: devtrack-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: oregon
+    healthCheckPath: /api-docs
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      
+      # Database connection variables (to be linked to Railway or external MySQL)
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      
+      # JWT Encryption
+      - key: JWT_SECRET
+        generateValue: true
+      
+      # Server Port
+      - key: PORT
+        value: 8080
+
+  # 2. DevTrack React Frontend Service
+  - type: web
+    name: devtrack-frontend
+    env: docker
+    dockerfilePath: frontend/Dockerfile
+    dockerContext: frontend
+    plan: free
+    region: oregon
+    envVars:
+      # Vite Base API URL pointing to the deployed backend's URL
+      - key: VITE_API_BASE_URL
+        fromService:
+          name: devtrack-backend
+          type: web
+          property: host
+        value: https://${devtrack-backend}/api
